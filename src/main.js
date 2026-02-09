@@ -1,5 +1,39 @@
 import "./style.css";
 
+/* ======================
+   AUDIO
+====================== */
+const bgm = new Audio("/bgm.mp3");
+bgm.loop = true;
+bgm.volume = 0.4;
+
+const sfx = new Audio("/firework_sfx.weba");
+sfx.volume = 0.5;
+let sfxReady = true;
+
+function playSfx() {
+  if (!sfxReady) return;
+  sfxReady = false;
+  sfx.currentTime = 0;
+  sfx.play();
+  // SFX berdurasi ~7 detik, cooldown 7 detik agar tidak overlap
+  setTimeout(() => { sfxReady = true; }, 7000);
+}
+
+/* ======================
+   START OVERLAY
+====================== */
+const overlay = document.getElementById("start-overlay");
+const startBtn = document.getElementById("start-btn");
+let started = false;
+
+startBtn.addEventListener("click", () => {
+  overlay.classList.add("hidden");
+  document.querySelector(".container").classList.add("show");
+  bgm.play();
+  started = true;
+});
+
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
@@ -103,6 +137,7 @@ class Firework {
 
   explode() {
     this.exploded = true;
+    if (started) playSfx();
 
     // inner burst
     for (let i = 0; i < 40; i++) {
